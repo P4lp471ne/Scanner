@@ -2,14 +2,20 @@ package com.example.scanner.logic;
 
 import com.example.scanner.logic.datatypes.requestTypes.Report;
 import com.example.scanner.utils.PropertiesLoader;
-
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+
+import java.io.IOException;
 
 class WarehouseAPI implements API {
     String urlBase;
     private String token;
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
     WarehouseAPI() throws IOException {
         urlBase = PropertiesLoader.getInstance().getProperty("URL");
@@ -27,20 +33,26 @@ class WarehouseAPI implements API {
 
     @Override
     public void startCollecting(String requestID, Callback callback) {
-        HttpClientWrapper.aget(urlBase + requestID + "/start", callback, token);
+        HttpClientWrapper.aget(urlBase + "/product_request/" + requestID + "/start", callback, token);
     }
 
     @Override
     public void cancelCollecting(String requestID, Callback callback) {
-        HttpClientWrapper.aget(urlBase + requestID + "/cancel", callback, token);
+        HttpClientWrapper.aget(urlBase + "/product_request/" + requestID + "/cancel", callback, token);
     }
 
     public void finishCollecting(Report report, Callback callback) {
-        HttpClientWrapper.apost(urlBase + report.getId() + "/finnish",
-                null, callback, token);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            HttpClientWrapper.apost(urlBase + "/product_request/" + report.getId() + "/finish",
+                    RequestBody.create(JSON, objectMapper.writeValueAsString(report)), callback, token);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     public void scan(String barcode, Callback callback) {
-        HttpClientWrapper.aget(urlBase + "/scan", callback, token);
+        RequestBody body = RequestBody.create(JSON, "{\"barcode\": \"" + barcode + "\"}");
+        HttpClientWrapper.apost(urlBase + "/scan", body, callback, token);
     }
 }

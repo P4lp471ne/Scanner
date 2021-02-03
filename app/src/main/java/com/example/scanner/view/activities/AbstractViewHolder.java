@@ -1,14 +1,9 @@
 package com.example.scanner.view.activities;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.scanner.App;
 import com.example.scanner.view.ViewManager;
 
@@ -16,8 +11,8 @@ public abstract class AbstractViewHolder {
     protected ViewManager manager;
     protected View view;
     protected ListView listView;
-    private App app;
     protected LayoutInflater inflater;
+    protected App app;
 
     protected AbstractViewHolder(ViewManager viewManager) {
         this.manager = viewManager;

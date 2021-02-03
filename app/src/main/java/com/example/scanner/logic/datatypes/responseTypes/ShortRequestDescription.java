@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
-@JsonIgnoreProperties(value = { "self_life_preference" })
+@JsonIgnoreProperties(value = {"self_life_preference"})
 @JsonSubTypes({
         @JsonSubTypes.Type(value = RequestData.class),
 })
@@ -14,6 +14,7 @@ public class ShortRequestDescription {
     private String nameView;
     private String collectionDate;
     private int status;
+    private String comment;
 
     public String getComment() {
         return comment;
@@ -22,8 +23,6 @@ public class ShortRequestDescription {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-    private String comment;
 
     public int getId() {
         return id;

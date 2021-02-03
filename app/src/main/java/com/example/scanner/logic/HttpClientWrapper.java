@@ -1,14 +1,9 @@
 package com.example.scanner.logic;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import okhttp3.*;
 
 public class HttpClientWrapper {
     private static OkHttpClient client = new OkHttpClient();
-
 
     public static void aget(String url, Callback callback, String token) {
         if (token == null) token = "";
@@ -25,6 +20,7 @@ public class HttpClientWrapper {
         Request request = new Request.Builder()
                 .url(path)
                 .addHeader("Authorization", token)
+                .addHeader("Content-Type", "application/json")
                 .post(formBody)
                 .build();
         Call call = client.newCall(request);

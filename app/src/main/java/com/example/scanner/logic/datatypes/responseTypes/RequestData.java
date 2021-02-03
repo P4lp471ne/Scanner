@@ -1,6 +1,5 @@
 package com.example.scanner.logic.datatypes.responseTypes;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -8,6 +7,12 @@ import java.util.List;
 public class RequestData extends ShortRequestDescription {
     private List<ProductRequestLine> lines;
     private Warehouse warehouseIn;
+    private Warehouse warehouseOut;
+    private int id;
+
+    RequestData() {
+        super();
+    }
 
     @JsonProperty("warehouse_in")
     public Warehouse getWarehouseIn() {
@@ -27,8 +32,6 @@ public class RequestData extends ShortRequestDescription {
         this.warehouseOut = warehouseOut;
     }
 
-    private Warehouse warehouseOut;
-
     @Override
     public int getId() {
         return id;
@@ -37,12 +40,6 @@ public class RequestData extends ShortRequestDescription {
     @Override
     public void setId(int id) {
         this.id = id;
-    }
-
-    private int id;
-
-    RequestData(){
-        super();
     }
 
     @JsonProperty("product_request_lines")

@@ -1,20 +1,17 @@
 package com.example.scanner.utils;
 
-import com.example.scanner.logic.datatypes.responseTypes.ProductRequestLine;
 import com.example.scanner.logic.datatypes.responseTypes.RequestData;
 import com.example.scanner.logic.datatypes.responseTypes.ShortRequestDescription;
 import com.example.scanner.view.ProductsListCallback;
 import com.example.scanner.view.ReqListCallback;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class CallbackProvider {
 

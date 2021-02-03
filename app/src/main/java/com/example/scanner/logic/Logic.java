@@ -5,26 +5,25 @@ import com.example.scanner.utils.CallbackProvider;
 import com.example.scanner.view.Consumer;
 import com.example.scanner.view.ProductsListCallback;
 import com.example.scanner.view.ReqListCallback;
-
-import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class Logic implements Producer{
+import java.io.IOException;
+
+public class Logic implements Producer {
     private API api;
     private Scanner scanner;
     private String buffer;
     private Consumer consumer;
 
-    public void setDoubleScan(boolean mode) {
-        scanner.setDoubleScan(mode);
-    }
-
     public Logic() throws IOException {
         api = new WarehouseAPI();
-        scanner = new Scanner();
+        scanner = new Scanner("");
+    }
+
+    public void setDoubleScan(boolean mode) {
+        scanner.setDoubleScan(mode);
     }
 
     public void requestRequestsList(ReqListCallback callback) {
@@ -60,7 +59,7 @@ public class Logic implements Producer{
         api.startCollecting(requestID, CallbackProvider.createControlCallback((Response response) -> {
             if (ServerResponseProcessor.parseStartResponse(response)) {
                 action.run();
-                scanner = new Scanner();
+                scanner = new Scanner(requestID);
                 scanner.start();
             }
         }));
@@ -68,7 +67,8 @@ public class Logic implements Producer{
 
     public void requestCancel(String requestID, Runnable action) {
         api.cancelCollecting(requestID, CallbackProvider.createControlCallback((Response response) -> {
-            if (ServerResponseProcessor.parseStartResponse(response)) {
+            if (ServerResponseProcessor.parseCancelResponse(response)) {
+                scanner.cancel();
                 action.run();
             }
         }));
@@ -87,22 +87,23 @@ public class Logic implements Producer{
             if (scanner.isDoubleScan()) {
                 if (buffer == null) {
                     buffer = reqv;
+                    consumer.notifyScan();
                     return;
                 }
                 reqv = buffer + reqv;
+                buffer = null;
             }
 
             api.scan(reqv, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    consumer.listen(null);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     Product prod = ServerResponseProcessor.parseScanResult(response);
-                    scanner.scan(prod);
-                    consumer.listen(prod);
+                    if (consumer.listen(prod)) scanner.scan(prod);
                 }
             });
         }

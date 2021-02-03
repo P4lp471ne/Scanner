@@ -3,7 +3,7 @@ package com.example.scanner.logic.datatypes.responseTypes;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(value = { "corporation_id", "is_delete" })
+@JsonIgnoreProperties(value = {"corporation_id", "is_delete"})
 public class Product {
     boolean isDelete;
     private int id;

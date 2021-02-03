@@ -11,18 +11,25 @@ import java.util.Map;
 import static java.util.stream.Collectors.toCollection;
 
 public class Scanner {
-    private Map<Product, ScannedProduct> requestLine = new HashMap<>();
+    private Map<String, ScannedProduct> requestLine = new HashMap<>();
     private boolean active;
     private String id;
     private boolean doubleScan;
+
+    Scanner(String id){
+        this.id = id;
+    }
 
     protected boolean isActive() {
         return active;
     }
 
     protected void scan(Product product) {
-        if (!requestLine.containsKey(product)) requestLine.put(product, new ScannedProduct());
-        ScannedProduct prod = requestLine.get(product);
+        if (!requestLine.containsKey(product.getProductCode())) {
+            requestLine.put(product.getProductCode(), new ScannedProduct());
+            requestLine.get(product.getProductCode()).setSerialNumber(product.getProductCode());
+        }
+        ScannedProduct prod = requestLine.get(product.getProductCode());
         prod.setQuantity(prod.getQuantity() + 1);
 //    protected void setRequest(RequestData data){
 //        requestLines = data.getLines();

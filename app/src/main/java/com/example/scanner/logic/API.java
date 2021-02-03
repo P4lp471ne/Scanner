@@ -2,7 +2,6 @@ package com.example.scanner.logic;
 
 
 import com.example.scanner.logic.datatypes.requestTypes.Report;
-
 import okhttp3.Callback;
 
 interface API {

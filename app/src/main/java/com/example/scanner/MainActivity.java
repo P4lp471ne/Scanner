@@ -3,19 +3,18 @@ package com.example.scanner;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.KeyEvent;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.scanner.logic.Logic;
 import com.example.scanner.utils.PropertiesLoader;
 import com.example.scanner.view.ViewManager;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements App{
+public class MainActivity extends AppCompatActivity implements App {
     ViewManager viewManager;
     Logic logic;
+    boolean backEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +34,12 @@ public class MainActivity extends AppCompatActivity implements App{
 
         viewManager.startScreen();
     }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getCharacters() != null && !event.getCharacters().isEmpty())
+        if (event.getCharacters() != null && event.getCharacters().length() > 1 && event.getAction()==KeyEvent.ACTION_MULTIPLE)
             logic.scan(event.getCharacters());
-            return super.dispatchKeyEvent(event);
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
@@ -48,7 +48,17 @@ public class MainActivity extends AppCompatActivity implements App{
     }
 
     @Override
+    public void setBackEnabled(boolean enabled) {
+        backEnabled = enabled;
+    }
+
+    @Override
     public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onPostCreate(savedInstanceState, persistentState);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backEnabled) viewManager.startScreen();
     }
 }

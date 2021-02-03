@@ -5,16 +5,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.util.List;
 
 public class Test {
     static ObjectMapper mapper = new ObjectMapper();
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         ShortRequestDescription obj = null;
         try {
-            obj =  mapper.readValue("{\n" +
+            obj = mapper.readValue("{\n" +
                             "    \"collection_date\": \"2020-02-22T00:00:00\",\n" +
                             "    \"comment\": \"коммент\",\n" +
                             "    \"ext_id\": \"123\",\n" +

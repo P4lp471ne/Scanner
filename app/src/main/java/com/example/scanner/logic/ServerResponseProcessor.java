@@ -6,18 +6,17 @@ import com.example.scanner.logic.datatypes.responseTypes.ShortRequestDescription
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.List;
-
-import okhttp3.Response;
 
 public class ServerResponseProcessor {
     static ObjectMapper mapper = new ObjectMapper();
 
     static List<ShortRequestDescription> parseReqListResponse(Response response) {
         try {
-            return mapper.readValue(response.body().string(),
+            if (response.code() == 200) return mapper.readValue(response.body().string(),
                     mapper.getTypeFactory().constructCollectionType(List.class,
                             ShortRequestDescription.class));
         } catch (JsonMappingException e) {
@@ -57,9 +56,27 @@ public class ServerResponseProcessor {
         return null;
     }
 
+    interface Result {
+        boolean getStatus();
+        void setStatus(boolean result);
+    }
+
     static boolean parseStartResponse(Response response) {
         try {
-            return mapper.readValue(response.body().string(), Boolean.class).booleanValue();
+            if (response.code() == 200)
+                return mapper.readValue(response.body().string(), (new Result() {
+                    private boolean result;
+
+                    @Override
+                    public boolean getStatus() {
+                        return result;
+                    }
+
+                    @Override
+                    public void setStatus(boolean result) {
+                        this.result = result;
+                    }
+                }).getClass()).getStatus();
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {

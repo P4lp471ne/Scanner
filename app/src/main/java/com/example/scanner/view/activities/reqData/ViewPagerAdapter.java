@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
 

@@ -6,12 +6,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
-
 import com.example.scanner.R;
 import com.example.scanner.logic.datatypes.responseTypes.ShortRequestDescription;
 import com.example.scanner.view.ViewManager;
 import com.example.scanner.view.activities.AbstractViewHolder;
-import com.example.scanner.view.activities.reqList.ReqListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +54,7 @@ public class RequestsView extends AbstractViewHolder {
 
     private void setListView() {
         listView = inflater.inflate(R.layout.list_view, null).findViewById(R.id.listview);
-        ((LinearLayout)view.findViewById(R.id.start_view)).addView(listView);
+        ((LinearLayout) view.findViewById(R.id.start_view)).addView(listView);
         adapter = new ReqListAdapter(getApp().getApplicationContext(),
                 R.layout.req_item, data);
         listView.setAdapter(adapter);

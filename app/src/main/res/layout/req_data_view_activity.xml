@@ -10,22 +10,25 @@
         android:layout_height="80dp"
         android:orientation="horizontal">
 
-        <Switch
-            android:id="@+id/doubleScanSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="Switch"
-            android:textOff="single\nscan"
-            android:textOn="double\nscan"
-            android:textSize="30sp" />
-
         <Button
             android:id="@+id/control"
             android:layout_width="98dp"
             android:layout_height="62dp"
-            android:text="cancel"
             android:textSize="18sp" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Switch
+            android:id="@+id/doubleScanSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Switch"
+            android:textOff="single\nscan"
+            android:textOn="double\nscan"
+            android:textSize="30sp" />
 
         <Button
             android:id="@+id/action"
@@ -40,7 +43,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
@@ -57,6 +60,6 @@
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
