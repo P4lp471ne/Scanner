@@ -15,9 +15,10 @@ public class Logic implements Producer {
     private API api;
     private Scanner scanner;
     private String buffer;
-    private Consumer consumer;
+    Consumer consumer;
 
     public Logic() throws IOException {
+        super();
         api = new WarehouseAPI();
         scanner = new Scanner("");
     }
@@ -91,25 +92,47 @@ public class Logic implements Producer {
                     consumer.notifyScan();
                     return;
                 }
-                reqv = buffer + reqv;
+                String reqv2 = reqv + buffer;
+                apiScan(buffer + reqv, () -> {apiScan(reqv2);});
                 buffer = null;
+                return;
             }
 
-            String finalReqv = reqv;
-            api.scan(reqv, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-//                    consumer.listen(null);
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    Product prod = ServerResponseProcessor.parseScanResult(response);
-                    if (consumer.listen(prod)) scanner.scan(finalReqv);
-                }
-            });
+            apiScan(reqv);
         }
+    }
+
+    private void apiScan(String reqv) {
+        api.scan(reqv, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                consumer.listen(null);
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Product prod = ServerResponseProcessor.parseScanResult(response);
+                if (consumer.listen(prod)) scanner.scan(reqv);
+            }
+        });
+    }
+
+    private void apiScan(String reqv, Runnable alternative) {
+        api.scan(reqv, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                consumer.listen(null);
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Product prod = ServerResponseProcessor.parseScanResult(response);
+                if (prod == null) alternative.run();
+                else if (consumer.listen(prod)) scanner.scan(reqv);
+            }
+        });
     }
 
     @Override

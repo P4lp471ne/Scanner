@@ -1,5 +1,8 @@
 package com.example.scanner.logic.datatypes.responseTypes;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -42,12 +45,13 @@ public class RequestData extends ShortRequestDescription {
         this.id = id;
     }
 
+    @Nullable
     @JsonProperty("product_request_lines")
     public List<ProductRequestLine> getLines() {
         return lines;
     }
 
-    public void setLines(List<ProductRequestLine> lines) {
+    public void setLines(@NonNull List<ProductRequestLine> lines) {
         this.lines = lines;
     }
 }

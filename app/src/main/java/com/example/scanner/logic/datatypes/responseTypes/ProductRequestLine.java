@@ -7,6 +7,11 @@ public class ProductRequestLine {
     private Product product;
     private int id;
     private int quantity;
+    private int scanned;
+
+    public int getScanned() {
+        return scanned;
+    }
 
     public ProductRequestLine() {
     }
@@ -38,6 +43,11 @@ public class ProductRequestLine {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public void decreaseQuantity(){
+        quantity--;
+        scanned++;
     }
 
 }

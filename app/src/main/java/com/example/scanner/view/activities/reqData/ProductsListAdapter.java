@@ -34,9 +34,10 @@ public class ProductsListAdapter extends ArrayAdapter<ProductRequestLine> {
         ((TextView) prodView.findViewById(R.id.product_code))
                 .setText(req.getProduct().getProductCode());
         ((TextView) prodView.findViewById(R.id.quantity))
-                .setText(String.valueOf(req.getQuantity()));
+                .setText(String.format("%d/%d", req.getQuantity(),
+                        req.getQuantity() + req.getScanned()));
 
-        if (req.getQuantity() == 0) {
+        if (0 == req.getQuantity()) {
             prodView.setBackgroundColor(Color.red(0));
         }
 

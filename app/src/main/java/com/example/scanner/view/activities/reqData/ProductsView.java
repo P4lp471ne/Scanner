@@ -11,6 +11,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
@@ -248,7 +250,7 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
         });
     }
 
-    void refresh() {
+    private void refresh() {
         manager.requestProducts(id, this::setData);
     }
 
@@ -260,15 +262,15 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
     }
 
     @Override
-    public boolean listen(Product product) {
-        if (product == null) {
+    public boolean listen(@Nullable Product product) {
+        if (null == product) {
             getApp().runOnUiThread(this::failDialog);
             return false;
         }
         for (ProductRequestLine line : lines) {
             if (line.getProduct().getProductCode().equals(product.getProductCode())) {
                 int quantity = line.getQuantity();
-                if (quantity > 0) line.setQuantity(quantity - 1);
+                if (quantity > 0) line.decreaseQuantity();
                 else {
                     getApp().runOnUiThread(this::notInListDialog);
                     return false;

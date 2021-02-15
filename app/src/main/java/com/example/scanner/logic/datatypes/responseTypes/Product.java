@@ -1,11 +1,13 @@
 package com.example.scanner.logic.datatypes.responseTypes;
 
+import androidx.annotation.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(value = {"corporation_id", "is_delete"})
 public class Product {
-    boolean isDelete;
+    private boolean isDelete;
     private int id;
     private CorportationId corportationId;
     private String nameView;
@@ -27,6 +29,7 @@ public class Product {
         this.corportationId = corportationId;
     }
 
+    @NonNull
     @JsonProperty("name_view")
     public String getNameView() {
         return nameView;
@@ -36,6 +39,7 @@ public class Product {
         this.nameView = nameView;
     }
 
+    @NonNull
     @JsonProperty("product_code")
     public String getProductCode() {
         return productCode;
