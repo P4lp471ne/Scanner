@@ -19,7 +19,7 @@ android:orientation="vertical">
                 android:id="@+id/prod_name_view"
                 style="@style/prod_item"
                 android:layout_width="300dp"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="serif"
                 android:text="name_view"
                 android:textSize="24sp" />
 
@@ -27,7 +27,9 @@ android:orientation="vertical">
                 android:id="@+id/product_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="product_code" />
+                android:fontFamily="sans-serif-black"
+                android:text="product_code"
+                android:textSize="24sp" />
 
         </LinearLayout>
 

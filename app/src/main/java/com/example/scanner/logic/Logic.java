@@ -23,6 +23,7 @@ public class Logic implements Producer {
     }
 
     public void setDoubleScan(boolean mode) {
+        buffer = null;
         scanner.setDoubleScan(mode);
     }
 
@@ -94,16 +95,18 @@ public class Logic implements Producer {
                 buffer = null;
             }
 
+            String finalReqv = reqv;
             api.scan(reqv, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    consumer.listen(null);
+//                    consumer.listen(null);
+                    e.printStackTrace();
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     Product prod = ServerResponseProcessor.parseScanResult(response);
-                    if (consumer.listen(prod)) scanner.scan(prod);
+                    if (consumer.listen(prod)) scanner.scan(finalReqv);
                 }
             });
         }

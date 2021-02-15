@@ -1,6 +1,7 @@
 package com.example.scanner.view.activities.reqData;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.LayoutInflater;
@@ -8,9 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.scanner.App;
@@ -19,7 +20,6 @@ import com.example.scanner.R;
 import com.example.scanner.logic.datatypes.responseTypes.Product;
 import com.example.scanner.logic.datatypes.responseTypes.ProductRequestLine;
 import com.example.scanner.logic.datatypes.responseTypes.RequestData;
-import com.example.scanner.scandialogs.ScanDialog;
 import com.example.scanner.view.Consumer;
 import com.example.scanner.view.ViewManager;
 import com.example.scanner.view.activities.AbstractViewHolder;
@@ -50,7 +50,12 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
 
             @Override
             public void setBackEnabled(boolean enabled) {
-                ((MainActivity)app).setBackEnabled(enabled);
+                ((MainActivity) app).setBackEnabled(enabled);
+            }
+
+            @Override
+            public Intent createIntent(Class<?> activityClass) {
+                return null;
             }
         });
         inflater = (LayoutInflater) app.getApplicationContext()
@@ -100,6 +105,16 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
         refresh.setOnClickListener(this::refreshBtnListener);
     }
 
+    private void disableRefresh() {
+        refresh.setEnabled(false);
+        refresh.setClickable(false);
+    }
+
+    private void enableRefresh() {
+        refresh.setEnabled(true);
+        refresh.setClickable(true);
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         if (data == null) return;
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tablayout);
@@ -130,6 +145,8 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
 
     private void cancel() {
         manager.cancel(id, this::setControlButtonToStart);
+        doubleScanSwitch.setChecked(false);
+        refresh();
         this.app.setBackEnabled(true);
     }
 
@@ -137,6 +154,7 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
         getApp().runOnUiThread(() -> {
             btn.setText("Cancel");
             btn.setBackgroundColor((new Color()).parseColor("#FF0000"));
+            disableRefresh();
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -147,29 +165,27 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
     }
 
     private void setControlButtonToStart() {
-        if (data != null && data.getStatus() == 0)
-            getApp().runOnUiThread(() -> {
-                btn.setText("Start");
-                btn.setBackgroundColor((new Color()).parseColor("#00FF00"));
-                btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+        if (data != null && data.getStatus() == 0) getApp().runOnUiThread(() -> {
+            btn.setText("Start");
+            btn.setBackgroundColor((new Color()).parseColor("#00FF00"));
+            enableRefresh();
+            btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                         start();
-                    }
-                });
+                }
             });
+        });
         if (data != null && data.getStatus() != 0) {
             System.out.println(data.getStatus());
-            btn.setActivated(false);
-            btn.setClickable(false);
-            btn.setEnabled(false);
-            btn.setBackgroundColor((new Color()).parseColor("#FFFF00"));
+            setControlButtonToCancel();
         }
-    }
+    };
 
     private void setControlButtonToFinish() {
         getApp().runOnUiThread(() -> {
             btn.setText("Finish");
+            disableRefresh();
             btn.setBackgroundColor((new Color()).parseColor("#FFFF00"));
             btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -211,12 +227,14 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
     private void setData(RequestData data) {
         this.data = data;
         setItems(data.getLines());
-        getApp().runOnUiThread(()->{
+        getApp().runOnUiThread(() -> {
             setControlButtonToStart();
             getApp().getWindow().setLocalFocus(true, true);
         });
         if (!pagerReady)
-            getApp().runOnUiThread(() -> {setupViewPager(pager);});
+            getApp().runOnUiThread(() -> {
+                setupViewPager(pager);
+            });
 //        upd.run();
     }
 
@@ -235,17 +253,16 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
     }
 
     @Override
-    public void notifyScan(){
+    public void notifyScan() {
         view.requestFocus();
-        FragmentManager manager = getApp().getSupportFragmentManager();
-        ScanDialog dialog = new ScanDialog("Scan second part please", "Ok");
-        dialog.show(manager, "myDialog");
+        notify("Scan second part please");
+        view.requestFocus();
     }
 
     @Override
     public boolean listen(Product product) {
-        if (product == null){
-            failDialog();
+        if (product == null) {
+            getApp().runOnUiThread(this::failDialog);
             return false;
         }
         for (ProductRequestLine line : lines) {
@@ -253,16 +270,17 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
                 int quantity = line.getQuantity();
                 if (quantity > 0) line.setQuantity(quantity - 1);
                 else {
-                    notInListDialog();
+                    getApp().runOnUiThread(this::notInListDialog);
                     return false;
                 }
                 if (line.getQuantity() == 0) {
                     lines.remove(line);
                     lines.add(line);
                 }
-                getApp().runOnUiThread(()-> {
+                getApp().runOnUiThread(() -> {
                     adapter.notifyDataSetChanged();
-                    successDialog();
+                    getApp().runOnUiThread(() -> {
+                        successDialog(product.getProductCode());});
                 });
                 if (lines.stream().allMatch(lin -> lin.getQuantity() == 0))
                     setControlButtonToFinish();
@@ -275,20 +293,19 @@ public class ProductsView extends AbstractViewHolder implements Consumer {
     }
 
     private void notInListDialog() {
-        FragmentManager manager = getApp().getSupportFragmentManager();
-        ScanDialog dialog = new ScanDialog("Scanned product is not in list", "Ok");
-        dialog.show(manager, "myDialog");
+        notify("Product is not in list");
     }
 
-    private void successDialog() {
-        FragmentManager manager = getApp().getSupportFragmentManager();
-        ScanDialog dialog = new ScanDialog("Ok", "Ok");
-        dialog.show(manager, "myDialog");
+    private void successDialog(String title) {
+        notify("Scanned" + title);
+    }
+
+    private void notify(String s) {
+        Toast toast = Toast.makeText(getApp().getApplicationContext(), s, Toast.LENGTH_LONG);
+        toast.show();
     }
 
     private void failDialog() {
-        FragmentManager manager = getApp().getSupportFragmentManager();
-        ScanDialog dialog = new ScanDialog("Fail", "OK");
-        dialog.show(manager, "myDialog");
+        notify("Fail");
     }
 }

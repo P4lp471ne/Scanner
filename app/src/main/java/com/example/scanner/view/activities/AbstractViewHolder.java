@@ -35,4 +35,8 @@ public abstract class AbstractViewHolder {
     }
 
     protected abstract void makeView();
+
+    public void focus() {
+        view.requestFocus();
+    }
 }

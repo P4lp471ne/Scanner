@@ -1,5 +1,6 @@
 package com.example.scanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.KeyEvent;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements App {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PropertiesLoader.getInstance().setContext(getApplicationContext());
+        PropertiesLoader.getInstance().load();
 //        setContentView(R.layout.activity_main);
 
         viewManager = new ViewManager(getApplicationContext());
@@ -37,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements App {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getCharacters() != null && event.getCharacters().length() > 1 && event.getAction()==KeyEvent.ACTION_MULTIPLE)
+        if (event.getCharacters() != null && event.getAction() == KeyEvent.ACTION_MULTIPLE)
+            viewManager.focus();
             logic.scan(event.getCharacters());
         return super.dispatchKeyEvent(event);
     }
@@ -50,6 +53,11 @@ public class MainActivity extends AppCompatActivity implements App {
     @Override
     public void setBackEnabled(boolean enabled) {
         backEnabled = enabled;
+    }
+
+    @Override
+    public Intent createIntent(Class<?> activityClass) {
+        return new Intent(MainActivity.this, activityClass);
     }
 
     @Override

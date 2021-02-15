@@ -2,16 +2,14 @@ package com.example.scanner.logic;
 
 import com.example.scanner.logic.datatypes.requestTypes.Report;
 import com.example.scanner.logic.datatypes.requestTypes.ScannedProduct;
-import com.example.scanner.logic.datatypes.responseTypes.Product;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import static java.util.stream.Collectors.toCollection;
 
 public class Scanner {
-    private Map<String, ScannedProduct> requestLine = new HashMap<>();
+    private List<ScannedProduct> requestLine = new ArrayList<ScannedProduct>();
     private boolean active;
     private String id;
     private boolean doubleScan;
@@ -24,13 +22,10 @@ public class Scanner {
         return active;
     }
 
-    protected void scan(Product product) {
-        if (!requestLine.containsKey(product.getProductCode())) {
-            requestLine.put(product.getProductCode(), new ScannedProduct());
-            requestLine.get(product.getProductCode()).setSerialNumber(product.getProductCode());
-        }
-        ScannedProduct prod = requestLine.get(product.getProductCode());
-        prod.setQuantity(prod.getQuantity() + 1);
+    protected void scan(String barcode) {
+        ScannedProduct prod = new ScannedProduct();
+        prod.setBarcode(barcode);
+        requestLine.add(prod);
 //    protected void setRequest(RequestData data){
 //        requestLines = data.getLines();
 //        id = data.getExtId();
@@ -50,11 +45,11 @@ public class Scanner {
     }
 
     protected Report getReport() {
-        return new Report(id, requestLine.values().stream().collect(toCollection(ArrayList::new)));
+        return new Report(id, requestLine);
     }
 
     protected void cancel() {
-        requestLine = null;
+        requestLine.clear();
         active = false;
     }
 }

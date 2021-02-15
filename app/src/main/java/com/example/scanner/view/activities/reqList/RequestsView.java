@@ -1,12 +1,16 @@
 package com.example.scanner.view.activities.reqList;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import com.example.scanner.MainActivity;
 import com.example.scanner.R;
+import com.example.scanner.SettingsActivity;
 import com.example.scanner.logic.datatypes.responseTypes.ShortRequestDescription;
 import com.example.scanner.view.ViewManager;
 import com.example.scanner.view.activities.AbstractViewHolder;
@@ -39,14 +43,14 @@ public class RequestsView extends AbstractViewHolder {
 //        refresh
         refresh.setOnClickListener(this::refresh);
 
-//        adapter = new ReqListAdapter(getApp().getApplicationContext(),
-//                R.layout.req_item, data);
-//        listView.setAdapter(adapter);
+        Button settings = view.findViewById(R.id.switchToSettings);
+        settings.setOnClickListener(this::switchToSettings);
 
         setListView();
 
         refresh(view);
     }
+
 
     private void refresh(View view) {
         manager.requestProductRequests(this::setItems);
@@ -69,11 +73,17 @@ public class RequestsView extends AbstractViewHolder {
 
     private void setItems(List<ShortRequestDescription> requestsList) {
         if (adapter == null) return;
+        if (requestsList == null) return;
         data.clear();
         data.addAll(requestsList);
         getApp().runOnUiThread(() -> {
             adapter.notifyDataSetChanged();
         });
 
+    }
+
+    private void switchToSettings(View view){
+        Intent intent = ((MainActivity) getApp()).createIntent(SettingsActivity.class);
+        getApp().startActivity(intent);
     }
 }

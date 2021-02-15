@@ -75,4 +75,8 @@ public class ViewManager {
     public void start(String id, Runnable r) {
         logic.requestStart(id, r);
     }
+
+    public void focus() {
+        gui.focus();
+    }
 }

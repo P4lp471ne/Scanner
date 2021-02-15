@@ -1,22 +1,13 @@
 package com.example.scanner.logic.datatypes.requestTypes;
 
 public class ScannedProduct {
-    private String serialNumber;
-    private int quantity;
+    private String barcode;
 
-    public String getSerialNumber() {
-        return serialNumber;
+    public String getBarcode() {
+        return barcode;
     }
 
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 }
